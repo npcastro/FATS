@@ -304,26 +304,6 @@ class Con():
         return count * 1.0 / (N - self.consecutiveStar + 1)
 
 
-# class VariabilityIndex(Base):
-
-#     # Eta. Removed, it is not invariant to time sampling
-#     '''
-#     The index is the ratio of mean of the square of successive difference to
-#     the variance of data points
-#     '''
-#     def __init__(self):
-#         self.category='timeSeries'
-
-
-#     def fit(self, data):
-
-#         N = len(data)
-#         sigma2 = np.var(data)
-
-#         return 1.0/((N-1)*sigma2) * np.sum(np.power(data[1:] - data[:-1] , 2)
-#      )
-
-
 class Color():
     """Average color for each MACHO lightcurve
     mean(B1) - mean(B2)
@@ -335,8 +315,6 @@ class Color():
         magnitude = data[0]
         magnitude2 = data[3]
         return np.mean(magnitude) - np.mean(magnitude2)
-
-# The categories of the following featurs should be revised
 
 
 class Beyond1Std():

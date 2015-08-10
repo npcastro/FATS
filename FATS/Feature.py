@@ -3,7 +3,7 @@ import inspect
 
 import numpy as np
 
-import featureFunction
+import FeatureFunctionLib as featureFunction
 
 
 class FeatureSpace:
