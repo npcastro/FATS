@@ -1,11 +1,7 @@
-import os
 import sys
-import time
 import inspect
 
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
 import featureFunction
 
@@ -53,12 +49,18 @@ class FeatureSpace:
             self.Data = Data
 
             if self.Data == 'all':
+
+                # featureList nunca es None
                 if featureList == None:
 
+                    # excludeList nunca va a ser None
                     if excludeList == None:
                         for name, obj in inspect.getmembers(featureFunction):
                             if inspect.isclass(obj) and name != 'Base':
                                 # if set(obj().Data).issubset(self.Data):
+
+                                # Guarda el nombre de cada feature y la linea 
+                                # donde comienza el codigo de cada una
                                 self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
                                 self.featureList.append(name)
                     else:
@@ -71,12 +73,15 @@ class FeatureSpace:
                 else:
                     for feature in featureList:
                         for name, obj in inspect.getmembers(featureFunction):
+
+                            # Se pueden juntar estos ifs
                             if name != 'Base':
                                 if inspect.isclass(obj) and feature == name:
                                     self.featureList.append(name)
 
             else:
 
+                # featureList nunca es None
                 if featureList is None:
                     for name, obj in inspect.getmembers(featureFunction):
                         if inspect.isclass(obj) and name != 'Base' and not name in excludeList:

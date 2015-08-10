@@ -1,21 +1,15 @@
-import os
-import sys
-import time
 import math
-import bisect
 
 import numpy as np
-import pandas as pd
 from scipy import stats
 from scipy.optimize import minimize
 from scipy.optimize import curve_fit
 from statsmodels.tsa import stattools
 
-from Base import Base
 import lomb
 
 
-class Amplitude(Base):
+class Amplitude():
     """Half the difference between the maximum and the minimum magnitude"""
 
     def __init__(self):
@@ -26,12 +20,13 @@ class Amplitude(Base):
         N = len(magnitude)
         sorted_mag = np.sort(magnitude)
 
-        return (np.median(sorted_mag[-math.ceil(0.05 * N):]) -
-                np.median(sorted_mag[0:math.ceil(0.05 * N)])) / 2.0
-        # return sorted_mag[10]
+        ret = (np.median(sorted_mag[-math.ceil(0.05 * N):]) -
+               np.median(sorted_mag[0:math.ceil(0.05 * N)])) / 2.0
+
+        return ret
 
 
-class Rcs(Base):
+class Rcs():
     """Range of cumulative sum"""
 
     def __init__(self):
@@ -44,10 +39,11 @@ class Rcs(Base):
         m = np.mean(magnitude)
         s = np.cumsum(magnitude - m) * 1.0 / (N * sigma)
         R = np.max(s) - np.min(s)
+
         return R
 
 
-class StetsonK(Base):
+class StetsonK():
     def __init__(self):
         self.Data = ['magnitude', 'error']
 
@@ -68,17 +64,17 @@ class StetsonK(Base):
         return K
 
 
-class Meanvariance(Base):
+class Meanvariance():
     """variability index"""
     def __init__(self):
         self.Data = ['magnitude']
 
     def fit(self, data):
         magnitude = data[0]
-        return np.std(magnitude) / np.mean(magnitude)
+        ret = np.std(magnitude) / np.mean(magnitude)
+        return ret
 
-
-class Autocor_length(Base):
+class Autocor_length():
 
     def __init__(self, lags=100):
         self.Data = ['magnitude']
@@ -100,7 +96,7 @@ class Autocor_length(Base):
         return k
 
 
-class SlottedA_length(Base):
+class SlottedA_length():
 
     def __init__(self, T=-99):
         """
@@ -236,7 +232,7 @@ class StetsonK_AC(SlottedA_length):
             print "error: please run SlottedA_length first to generate values for StetsonK_AC "
 
 
-class StetsonL(Base):
+class StetsonL():
     def __init__(self):
         self.Data = ['magnitude', 'time', 'error', 'magnitude2', 'error2']
 
@@ -272,7 +268,7 @@ class StetsonL(Base):
         return J * K / 0.798
 
 
-class Con(Base):
+class Con():
     """Index introduced for selection of variable starts from OGLE database.
 
 
@@ -328,7 +324,7 @@ class Con(Base):
 #      )
 
 
-class Color(Base):
+class Color():
     """Average color for each MACHO lightcurve
     mean(B1) - mean(B2)
     """
@@ -343,7 +339,7 @@ class Color(Base):
 # The categories of the following featurs should be revised
 
 
-class Beyond1Std(Base):
+class Beyond1Std():
     """Percentage of points beyond one st. dev. from the weighted
     (by photometric errors) mean
     """
@@ -370,7 +366,7 @@ class Beyond1Std(Base):
         return float(count) / n
 
 
-class SmallKurtosis(Base):
+class SmallKurtosis():
     """Small sample kurtosis of the magnitudes.
 
     See http://www.xycoon.com/peakedness_small_sample_test_1.htm
@@ -394,7 +390,7 @@ class SmallKurtosis(Base):
         return c1 * S - c2
 
 
-class Std(Base):
+class Std():
     """Standard deviation of the magnitudes"""
 
     def __init__(self):
@@ -405,7 +401,7 @@ class Std(Base):
         return np.std(magnitude)
 
 
-class Skew(Base):
+class Skew():
     """Skewness of the magnitudes"""
 
     def __init__(self):
@@ -416,7 +412,7 @@ class Skew(Base):
         return stats.skew(magnitude)
 
 
-class StetsonJ(Base):
+class StetsonJ():
     """Stetson (1996) variability index, a robust standard deviation"""
 
     def __init__(self):
@@ -449,7 +445,7 @@ class StetsonJ(Base):
         return J
 
 
-class MaxSlope(Base):
+class MaxSlope():
     """
     Examining successive (time-sorted) magnitudes, the maximal first difference
     (value of delta magnitude over delta time)
@@ -468,7 +464,7 @@ class MaxSlope(Base):
         return np.max(slope)
 
 
-class MedianAbsDev(Base):
+class MedianAbsDev():
 
     def __init__(self):
         self.category = 'basic'
@@ -483,7 +479,7 @@ class MedianAbsDev(Base):
         return np.median(devs)
 
 
-class MedianBRP(Base):
+class MedianBRP():
     """Median buffer range percentage
 
     Fraction (<= 1) of photometric points within amplitude/10
@@ -505,7 +501,7 @@ class MedianBRP(Base):
         return float(count) / n
 
 
-class PairSlopeTrend(Base):
+class PairSlopeTrend():
     """
     Considering the last 30 (time-sorted) measurements of source magnitude,
     the fraction of increasing first differences minus the fraction of
@@ -523,7 +519,7 @@ class PairSlopeTrend(Base):
                 len(np.where(np.diff(data_last) <= 0)[0])) / 30)
 
 
-class FluxPercentileRatioMid20(Base):
+class FluxPercentileRatioMid20():
 
     def __init__(self):
         self.Data = ['magnitude']
@@ -545,7 +541,7 @@ class FluxPercentileRatioMid20(Base):
         return F_mid20
 
 
-class FluxPercentileRatioMid35(Base):
+class FluxPercentileRatioMid35():
 
     def __init__(self):
         self.Data = ['magnitude']
@@ -567,7 +563,7 @@ class FluxPercentileRatioMid35(Base):
         return F_mid35
 
 
-class FluxPercentileRatioMid50(Base):
+class FluxPercentileRatioMid50():
 
     def __init__(self):
         self.Data = ['magnitude']
@@ -589,7 +585,7 @@ class FluxPercentileRatioMid50(Base):
         return F_mid50
 
 
-class FluxPercentileRatioMid65(Base):
+class FluxPercentileRatioMid65():
 
     def __init__(self):
         self.Data = ['magnitude']
@@ -611,7 +607,7 @@ class FluxPercentileRatioMid65(Base):
         return F_mid65
 
 
-class FluxPercentileRatioMid80(Base):
+class FluxPercentileRatioMid80():
 
     def __init__(self):
         self.Data = ['magnitude']
@@ -633,7 +629,7 @@ class FluxPercentileRatioMid80(Base):
         return F_mid80
 
 
-class PercentDifferenceFluxPercentile(Base):
+class PercentDifferenceFluxPercentile():
 
     def __init__(self):
         self.Data = ['magnitude']
@@ -653,7 +649,7 @@ class PercentDifferenceFluxPercentile(Base):
         return percent_difference
 
 
-class PercentAmplitude(Base):
+class PercentAmplitude():
 
     def __init__(self):
         self.Data = ['magnitude']
@@ -669,7 +665,7 @@ class PercentAmplitude(Base):
         return percent_amplitude
 
 
-class LinearTrend(Base):
+class LinearTrend():
 
     def __init__(self):
         self.Data = ['magnitude', 'time']
@@ -682,7 +678,7 @@ class LinearTrend(Base):
         return regression_slope
 
 
-class Eta_color(Base):
+class Eta_color():
 
     def __init__(self):
 
@@ -710,7 +706,7 @@ class Eta_color(Base):
         return eta_B_R
 
 
-class Eta_e(Base):
+class Eta_e():
 
     def __init__(self):
 
@@ -735,7 +731,7 @@ class Eta_e(Base):
         return eta_e
 
 
-class Mean(Base):
+class Mean():
 
     def __init__(self):
 
@@ -748,7 +744,7 @@ class Mean(Base):
         return B_mean
 
 
-class Q31(Base):
+class Q31():
 
     def __init__(self):
 
@@ -759,7 +755,7 @@ class Q31(Base):
         return np.percentile(magnitude, 75) - np.percentile(magnitude, 25)
 
 
-class Q31_color(Base):
+class Q31_color():
 
     def __init__(self):
 
@@ -774,7 +770,7 @@ class Q31_color(Base):
         return np.percentile(b_r, 75) - np.percentile(b_r, 25)
 
 
-class AndersonDarling(Base):
+class AndersonDarling():
 
     def __init__(self):
 
@@ -787,7 +783,7 @@ class AndersonDarling(Base):
         return 1 / (1.0 + np.exp(-10 * (ander - 0.3)))
 
 
-class PeriodLS(Base):
+class PeriodLS():
 
     def __init__(self, ofac=6.):
 
@@ -811,7 +807,7 @@ class PeriodLS(Base):
         return T
 
 
-class Period_fit(Base):
+class Period_fit():
 
     def __init__(self):
 
@@ -825,7 +821,7 @@ class Period_fit(Base):
             print "error: please run PeriodLS first to generate values for Period_fit"
 
 
-class Psi_CS(Base):
+class Psi_CS():
 
     def __init__(self):
 
@@ -848,7 +844,7 @@ class Psi_CS(Base):
             print "error: please run PeriodLS first to generate values for Psi_CS"
 
 
-class Psi_eta(Base):
+class Psi_eta():
 
     def __init__(self):
 
@@ -884,7 +880,7 @@ class Psi_eta(Base):
             print "error: please run PeriodLS first to generate values for Psi_eta"
 
 
-class CAR_sigma(Base):
+class CAR_sigma():
 
     def __init__(self):
 
@@ -989,7 +985,7 @@ class CAR_sigma(Base):
         return a
 
 
-class CAR_tau(Base):
+class CAR_tau():
 
     def __init__(self):
 
@@ -1003,7 +999,7 @@ class CAR_tau(Base):
             print "error: please run CAR_sigma first to generate values for CAR_tau"
 
 
-class CAR_mean(Base):
+class CAR_mean():
 
     def __init__(self):
 
@@ -1019,7 +1015,7 @@ class CAR_mean(Base):
             print "error: please run CAR_sigma first to generate values for CAR_mean"
 
 
-class Freq1_harmonics_amplitude_0(Base):
+class Freq1_harmonics_amplitude_0():
     def __init__(self):
         self.Data = ['magnitude', 'time']
 
@@ -1077,7 +1073,7 @@ class Freq1_harmonics_amplitude_0(Base):
         return A[0][0]
 
 
-class Freq1_harmonics_amplitude_1(Base):
+class Freq1_harmonics_amplitude_1():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1090,7 +1086,7 @@ class Freq1_harmonics_amplitude_1(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq1_harmonics_amplitude_2(Base):
+class Freq1_harmonics_amplitude_2():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1103,7 +1099,7 @@ class Freq1_harmonics_amplitude_2(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq1_harmonics_amplitude_3(Base):
+class Freq1_harmonics_amplitude_3():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1115,7 +1111,7 @@ class Freq1_harmonics_amplitude_3(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq2_harmonics_amplitude_0(Base):
+class Freq2_harmonics_amplitude_0():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1127,7 +1123,7 @@ class Freq2_harmonics_amplitude_0(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq2_harmonics_amplitude_1(Base):
+class Freq2_harmonics_amplitude_1():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1139,7 +1135,7 @@ class Freq2_harmonics_amplitude_1(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq2_harmonics_amplitude_2(Base):
+class Freq2_harmonics_amplitude_2():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1151,7 +1147,7 @@ class Freq2_harmonics_amplitude_2(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq2_harmonics_amplitude_3(Base):
+class Freq2_harmonics_amplitude_3():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1163,7 +1159,7 @@ class Freq2_harmonics_amplitude_3(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq3_harmonics_amplitude_0(Base):
+class Freq3_harmonics_amplitude_0():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1175,7 +1171,7 @@ class Freq3_harmonics_amplitude_0(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq3_harmonics_amplitude_1(Base):
+class Freq3_harmonics_amplitude_1():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1187,7 +1183,7 @@ class Freq3_harmonics_amplitude_1(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq3_harmonics_amplitude_2(Base):
+class Freq3_harmonics_amplitude_2():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1199,7 +1195,7 @@ class Freq3_harmonics_amplitude_2(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq3_harmonics_amplitude_3(Base):
+class Freq3_harmonics_amplitude_3():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1211,7 +1207,7 @@ class Freq3_harmonics_amplitude_3(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq1_harmonics_rel_phase_0(Base):
+class Freq1_harmonics_rel_phase_0():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1223,7 +1219,7 @@ class Freq1_harmonics_rel_phase_0(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq1_harmonics_rel_phase_1(Base):
+class Freq1_harmonics_rel_phase_1():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1235,7 +1231,7 @@ class Freq1_harmonics_rel_phase_1(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq1_harmonics_rel_phase_2(Base):
+class Freq1_harmonics_rel_phase_2():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1247,7 +1243,7 @@ class Freq1_harmonics_rel_phase_2(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq1_harmonics_rel_phase_3(Base):
+class Freq1_harmonics_rel_phase_3():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1259,7 +1255,7 @@ class Freq1_harmonics_rel_phase_3(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq2_harmonics_rel_phase_0(Base):
+class Freq2_harmonics_rel_phase_0():
     def __init__(self):
         self.category = 'timeSeries'
 
@@ -1272,7 +1268,7 @@ class Freq2_harmonics_rel_phase_0(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq2_harmonics_rel_phase_1(Base):
+class Freq2_harmonics_rel_phase_1():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1284,7 +1280,7 @@ class Freq2_harmonics_rel_phase_1(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq2_harmonics_rel_phase_2(Base):
+class Freq2_harmonics_rel_phase_2():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1296,7 +1292,7 @@ class Freq2_harmonics_rel_phase_2(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq2_harmonics_rel_phase_3(Base):
+class Freq2_harmonics_rel_phase_3():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1308,7 +1304,7 @@ class Freq2_harmonics_rel_phase_3(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq3_harmonics_rel_phase_0(Base):
+class Freq3_harmonics_rel_phase_0():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1320,7 +1316,7 @@ class Freq3_harmonics_rel_phase_0(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq3_harmonics_rel_phase_1(Base):
+class Freq3_harmonics_rel_phase_1():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1332,7 +1328,7 @@ class Freq3_harmonics_rel_phase_1(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq3_harmonics_rel_phase_2(Base):
+class Freq3_harmonics_rel_phase_2():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
@@ -1344,7 +1340,7 @@ class Freq3_harmonics_rel_phase_2(Base):
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
 
-class Freq3_harmonics_rel_phase_3(Base):
+class Freq3_harmonics_rel_phase_3():
     def __init__(self):
 
         self.Data = ['magnitude', 'time']
